@@ -26,51 +26,57 @@
 // Canvas that should survive the running of this macro:
 TCanvas *c1;
 
-std::mt19937 global_generator( rand() );
+std::mt19937 global_generator(rand());
 std::normal_distribution<double> global_gaus(0., 1.);
 
-
-double GetRNG_global(){
-    return global_gaus( global_generator );
+double GetRNG_global()
+{
+   return global_gaus(global_generator);
 }
 
-double GetRNG_thread_safe(unsigned int slot){
-   static thread_local std::mt19937 generator( rand() );
+double GetRNG_thread_safe(unsigned int slot)
+{
+   static thread_local std::mt19937 generator(rand());
    static thread_local std::normal_distribution<double> gaus(0., 1.);
-   return gaus( generator );
+   return gaus(generator);
 }
 
-void df041_ThreadSafeRNG(){
-    c1 = new TCanvas("c1", "c1", 1500, 500);
-    c1->Divide(3, 1);
-    
-    // 1. Single thread for reference
-    ROOT::DisableImplicitMT();
-    auto df1 = ROOT::RDataFrame(10000000).Define("x", GetRNG_global);
-    auto h1 = df1.Histo1D({"h1", "Single thread (no MT)", 1000, -4, 4}, {"x"});    
-    c1->cd(1);
-    h1->DrawClone();
+void df041_ThreadSafeRNG()
+{
+   c1 = new TCanvas("c1", "c1", 1500, 500);
+   c1->Divide(3, 1);
 
-    
-    // 2. Enable MT and generate random variables with global generator
-    // NOTE: Causes race conditions! Don't do it in your code!
-    // More cores - more noticeable effect
-    ROOT::EnableImplicitMT(32);
-    auto df2 = ROOT::RDataFrame(10000000).Define("x", GetRNG_global);
-    auto h2 = df2.Histo1D({"h3", "Global generator (MT)", 1000, -4, 4}, {"x"});
-    c1->cd(2);
-    h2->DrawClone();
+   // 1. Single thread for reference
+   ROOT::DisableImplicitMT();
+   auto df1 = ROOT::RDataFrame(10000000).Define("x", GetRNG_global);
+   auto h1 = df1.Histo1D({"h1", "Single thread (no MT)", 1000, -4, 4}, {"x"});
+   c1->cd(1);
+   h1->DrawClone();
 
-    // 2. Generate random variables with several per-thread generators
-    // NOTE: Do this!
-    auto df3 = ROOT::RDataFrame(10000000).DefineSlot("x", GetRNG_thread_safe);
-    auto h3 = df3.Histo1D({"h4", "Thread-safe generators (MT)", 1000, -4, 4}, {"x"});
-    c1->cd(3);
-    h3->DrawClone();
+   // 2. Enable MT and generate random variables with global generator
+   // NOTE: Causes race conditions! Don't do it in your code!
+   // More cores - more noticeable effect
+   ROOT::EnableImplicitMT(32);
+   auto df2 = ROOT::RDataFrame(10000000).Define("x", GetRNG_global);
+   auto h2 = df2.Histo1D({"h3", "Global generator (MT)", 1000, -4, 4}, {"x"});
+   c1->cd(2);
+   h2->DrawClone();
 
-    std::cout<<std::fixed<<std::setprecision(3)<<"Final distributions        : "<<"Mean "<<" +- "<<"STD  "<<std::endl;
-    std::cout<<std::fixed<<std::setprecision(3)<<"Theoretical                : "<<"0.000"<<" +- "<<"1.000"<<std::endl;
-    std::cout<<std::fixed<<std::setprecision(3)<<"Single thread       (no MT): "<<h1->GetMean()<<" +- "<<h1->GetStdDev()<<std::endl;
-    std::cout<<std::fixed<<std::setprecision(3)<<"Race condition         (MT): "<<h2->GetMean()<<" +- "<<h2->GetStdDev()<<std::endl;
-    std::cout<<std::fixed<<std::setprecision(3)<<"Thread-safe            (MT): "<<h3->GetMean()<<" +- "<<h3->GetStdDev()<<std::endl;   
+   // 2. Generate random variables with several per-thread generators
+   // NOTE: Do this!
+   auto df3 = ROOT::RDataFrame(10000000).DefineSlot("x", GetRNG_thread_safe);
+   auto h3 = df3.Histo1D({"h4", "Thread-safe generators (MT)", 1000, -4, 4}, {"x"});
+   c1->cd(3);
+   h3->DrawClone();
+
+   std::cout << std::fixed << std::setprecision(3) << "Final distributions        : " << "Mean " << " +- " << "STD  "
+             << std::endl;
+   std::cout << std::fixed << std::setprecision(3) << "Theoretical                : " << "0.000" << " +- " << "1.000"
+             << std::endl;
+   std::cout << std::fixed << std::setprecision(3) << "Single thread       (no MT): " << h1->GetMean() << " +- "
+             << h1->GetStdDev() << std::endl;
+   std::cout << std::fixed << std::setprecision(3) << "Race condition         (MT): " << h2->GetMean() << " +- "
+             << h2->GetStdDev() << std::endl;
+   std::cout << std::fixed << std::setprecision(3) << "Thread-safe            (MT): " << h3->GetMean() << " +- "
+             << h3->GetStdDev() << std::endl;
 }
