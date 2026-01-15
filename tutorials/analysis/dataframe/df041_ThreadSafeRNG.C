@@ -43,8 +43,8 @@ double GetRNG_thread_safe(unsigned int slot)
 
 void df041_ThreadSafeRNG()
 {
-   c1 = new TCanvas("c1", "c1", 1500, 500);
-   c1->Divide(3, 1);
+   c1 = new TCanvas("c1", "c1", 1000, 500);
+   c1->Divide(2, 1);
 
    // 1. Single thread for reference
    ROOT::DisableImplicitMT();
@@ -53,21 +53,12 @@ void df041_ThreadSafeRNG()
    c1->cd(1);
    h1->DrawClone();
 
-   // 2. Enable MT and generate random variables with global generator
-   // NOTE: Causes race conditions! Don't do it in your code!
-   // More cores - more noticeable effect
+   // 2. Generate random variables with several per-thread generators
    ROOT::EnableImplicitMT(32);
-   auto df2 = ROOT::RDataFrame(10000000).Define("x", GetRNG_global);
-   auto h2 = df2.Histo1D({"h3", "Global generator (MT)", 1000, -4, 4}, {"x"});
+   auto df2 = ROOT::RDataFrame(10000000).DefineSlot("x", GetRNG_thread_safe);
+   auto h2 = df2.Histo1D({"h4", "Thread-safe generators (MT)", 1000, -4, 4}, {"x"});
    c1->cd(2);
    h2->DrawClone();
-
-   // 2. Generate random variables with several per-thread generators
-   // NOTE: Do this!
-   auto df3 = ROOT::RDataFrame(10000000).DefineSlot("x", GetRNG_thread_safe);
-   auto h3 = df3.Histo1D({"h4", "Thread-safe generators (MT)", 1000, -4, 4}, {"x"});
-   c1->cd(3);
-   h3->DrawClone();
 
    std::cout << std::fixed << std::setprecision(3) << "Final distributions        : " << "Mean " << " +- " << "STD  "
              << std::endl;
@@ -75,8 +66,6 @@ void df041_ThreadSafeRNG()
              << std::endl;
    std::cout << std::fixed << std::setprecision(3) << "Single thread       (no MT): " << h1->GetMean() << " +- "
              << h1->GetStdDev() << std::endl;
-   std::cout << std::fixed << std::setprecision(3) << "Race condition         (MT): " << h2->GetMean() << " +- "
+   std::cout << std::fixed << std::setprecision(3) << "Thread-safe            (MT): " << h2->GetMean() << " +- "
              << h2->GetStdDev() << std::endl;
-   std::cout << std::fixed << std::setprecision(3) << "Thread-safe            (MT): " << h3->GetMean() << " +- "
-             << h3->GetStdDev() << std::endl;
 }
