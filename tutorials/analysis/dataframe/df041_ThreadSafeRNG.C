@@ -25,7 +25,8 @@
 // Canvas that should survive the running of this macro:
 TCanvas *c1;
 
-std::mt19937 globalGenerator(rand());
+std::random_device globalRandomDevice{};
+std::mt19937 globalGenerator(globalRandomDevice());
 std::normal_distribution<double> globalGaus(0., 1.);
 
 double GetGlobalRNG()
