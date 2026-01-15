@@ -47,7 +47,6 @@ void df041_ThreadSafeRNG()
    c1->Divide(2, 1);
 
    // 1. Single thread for reference
-   ROOT::DisableImplicitMT();
    auto df1 = ROOT::RDataFrame(10000000).Define("x", GetRNG_global);
    auto h1 = df1.Histo1D({"h1", "Single thread (no MT)", 1000, -4, 4}, {"x"});
    c1->cd(1);
