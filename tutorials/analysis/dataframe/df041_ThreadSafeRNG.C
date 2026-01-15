@@ -26,15 +26,15 @@
 // Canvas that should survive the running of this macro:
 TCanvas *c1;
 
-std::mt19937 global_generator(rand());
-std::normal_distribution<double> global_gaus(0., 1.);
+std::mt19937 globalGenerator(rand());
+std::normal_distribution<double> globalGaus(0., 1.);
 
-double GetRNG_global()
+double GetGlobalRNG()
 {
-   return global_gaus(global_generator);
+   return globalGaus(globalGenerator);
 }
 
-double GetRNG_thread_safe(unsigned int slot)
+double GetThreadSafeRNG(unsigned int slot)
 {
    static thread_local std::mt19937 generator(rand());
    static thread_local std::normal_distribution<double> gaus(0., 1.);
@@ -47,14 +47,14 @@ void df041_ThreadSafeRNG()
    c1->Divide(2, 1);
 
    // 1. Single thread for reference
-   auto df1 = ROOT::RDataFrame(10000000).Define("x", GetRNG_global);
+   auto df1 = ROOT::RDataFrame(10000000).Define("x", GetGlobalRNG);
    auto h1 = df1.Histo1D({"h1", "Single thread (no MT)", 1000, -4, 4}, {"x"});
    c1->cd(1);
    h1->DrawClone();
 
    // 2. Generate random variables with several per-thread generators
    ROOT::EnableImplicitMT(32);
-   auto df2 = ROOT::RDataFrame(10000000).DefineSlot("x", GetRNG_thread_safe);
+   auto df2 = ROOT::RDataFrame(10000000).DefineSlot("x", GetThreadSafeRNG);
    auto h2 = df2.Histo1D({"h4", "Thread-safe generators (MT)", 1000, -4, 4}, {"x"});
    c1->cd(2);
    h2->DrawClone();
