@@ -60,12 +60,12 @@ void df041_ThreadSafeRNG()
    c1->cd(2);
    h2->DrawClone();
 
-   std::cout << std::fixed << std::setprecision(3) << "Final distributions        : " << "Mean " << " +- " << "STD  "
+   std::cout << std::fixed << std::setprecision(3) << "Final distributions  : " << "Mean " << " +- " << "StdDev"
              << std::endl;
-   std::cout << std::fixed << std::setprecision(3) << "Theoretical                : " << "0.000" << " +- " << "1.000"
+   std::cout << std::fixed << std::setprecision(3) << "Theoretical          : " << "0.000" << " +- " << "1.000"
              << std::endl;
-   std::cout << std::fixed << std::setprecision(3) << "Single thread       (no MT): " << h1->GetMean() << " +- "
+   std::cout << std::fixed << std::setprecision(3) << "Single thread (no MT): " << h1->GetMean() << " +- "
              << h1->GetStdDev() << std::endl;
-   std::cout << std::fixed << std::setprecision(3) << "Thread-safe            (MT): " << h2->GetMean() << " +- "
+   std::cout << std::fixed << std::setprecision(3) << "Thread-safe      (MT): " << h2->GetMean() << " +- "
              << h2->GetStdDev() << std::endl;
 }
