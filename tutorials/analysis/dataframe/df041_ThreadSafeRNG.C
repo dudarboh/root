@@ -34,7 +34,7 @@ double GetGlobalRNG()
    return globalGaus(globalGenerator);
 }
 
-double GetThreadSafeRNG(unsigned int slot)
+double GetThreadSafeRNG()
 {
    thread_local std::random_device rd{};
    thread_local std::mt19937 generator(rd());
@@ -55,7 +55,7 @@ void df041_ThreadSafeRNG()
 
    // 2. Generate random variables with several per-thread generators
    ROOT::EnableImplicitMT(32);
-   auto df2 = ROOT::RDataFrame(10000000).DefineSlot("x", GetThreadSafeRNG);
+   auto df2 = ROOT::RDataFrame(10000000).Define("x", GetThreadSafeRNG);
    auto h2 = df2.Histo1D({"h4", "Thread-safe generators (MT)", 1000, -4, 4}, {"x"});
    c1->cd(2);
    h2->DrawClone();
