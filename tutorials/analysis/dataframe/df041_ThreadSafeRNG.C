@@ -4,7 +4,7 @@
 /// Usage of multithreading mode with random generators.
 ///
 /// This tutorial illustrates how to make a thread-safe program with thread-local random number engines.
-/// Using only one random number generator in a ROOT::EnableImplicitMT() mode is a common pitfal.
+/// Using only one random number generator in a ROOT::EnableImplicitMT() mode is a common pitfall.
 /// This pitfall creates race conditions resulting in a distorted random distribution.
 /// This example illustrates how to define thread-safe functions that generate random numbers and use them in an
 /// RDataFrame computation graph.
@@ -19,7 +19,6 @@
 #include <iostream>
 #include <thread>
 #include <random>
-#include "TRandom3.h"
 #include "TCanvas.h"
 #include "ROOT/RDataFrame.hxx"
 
