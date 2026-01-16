@@ -36,9 +36,9 @@ double GetGlobalRNG()
 
 double GetThreadSafeRNG(unsigned int slot)
 {
-   static thread_local std::random_device rd{};
-   static thread_local std::mt19937 generator(rd());
-   static thread_local std::normal_distribution<double> gaus(0., 1.);
+   thread_local std::random_device rd{};
+   thread_local std::mt19937 generator(rd());
+   thread_local std::normal_distribution<double> gaus(0., 1.);
    return gaus(generator);
 }
 
