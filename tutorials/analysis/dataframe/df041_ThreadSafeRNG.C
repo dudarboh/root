@@ -6,7 +6,8 @@
 /// This tutorial illustrates how to make a thread-safe program with thread-local random number engines.
 /// Using only one random number generator in a ROOT::EnableImplicitMT() mode is a common pitfal.
 /// This pitfall creates race conditions resulting in a distorted random distribution.
-/// This example illustrates how to define thread-safe functions that generate random numbers and use them in an RDataFrame computation graph.
+/// This example illustrates how to define thread-safe functions that generate random numbers and use them in an
+/// RDataFrame computation graph.
 ///
 /// \macro_code
 /// \macro_image
