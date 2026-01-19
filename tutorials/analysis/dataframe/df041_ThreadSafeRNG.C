@@ -61,7 +61,7 @@ void df041_ThreadSafeRNG()
    h1->DrawClone();
 
    // 2. thread_local generators with random_device seeding
-   // Notes and Caveates:
+   // Notes and Caveats:
    // - how many numbers are drawn from each generator is not deterministic
    //   and the result is not deterministic between runs
    ROOT::EnableImplicitMT(32);
@@ -71,7 +71,7 @@ void df041_ThreadSafeRNG()
    h2->DrawClone();
 
    // 3. thread_local generators with entry seeding
-   // Notes and Caveates:
+   // Notes and Caveats:
    // - With RDataFrame(INTEGER_NUMBER) constructor (as in the example),
    //   the result is deterministic and identical on every run
    // - With RDataFrame(TTree) constructor, the result is not guaranteed to be deterministic.
