@@ -14,7 +14,7 @@
 /// \macro_output
 ///
 /// \date 2025
-/// \author Bohdan Dudar (JGU Mainz) and Fernando Hueso-González (IFIC)
+/// \author Bohdan Dudar (JGU Mainz) and Fernando Hueso-González (IFIC, CSIC-UV)
 
 #include <iostream>
 #include <thread>
@@ -66,6 +66,7 @@ void df041_ThreadSafeRNG()
    // Notes and Caveats:
    // - how many numbers are drawn from each generator is not deterministic
    //   and the result is not deterministic between runs
+   //   even if one seeded each generator with its rdfslot index.
    ROOT::EnableImplicitMT(32);
    auto df2 = ROOT::RDataFrame(10000000).Define("x", GetNormallyDistributedNumber);
    auto h2 = df2.Histo1D({"h2", "Thread-safe (MT, non-deterministic)", 1000, -4, 4}, {"x"});
