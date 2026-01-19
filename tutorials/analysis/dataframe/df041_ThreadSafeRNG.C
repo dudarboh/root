@@ -84,7 +84,6 @@ void df041_ThreadSafeRNG()
    // - With RDataFrame(TTree) constructor, the result is not guaranteed to be deterministic.
    //   To make it deterministic, use something from the dataset to act as the event identifier
    //   instead of rdfentry_, and use it as a seed.
-   // - requires reseeding generator for each entry, which may have performance
    //   implications
 
    auto df3 = ROOT::RDataFrame(10000000).Define("x", GetNormallyDistributedNumberForEntry, {"rdfentry_"});
