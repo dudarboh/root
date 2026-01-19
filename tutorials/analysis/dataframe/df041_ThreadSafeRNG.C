@@ -44,8 +44,10 @@ double GetNormallyDistributedNumber()
 
 double GetNormallyDistributedNumberForEntry(unsigned long long entry)
 {
-   std::mt19937 generator(entry);
-   std::normal_distribution<double> gaus(0., 1.);
+   thread_local std::mt19937 generator;
+   thread_local std::normal_distribution<double> gaus(0., 1.);
+   gaus.reset();
+   generator.seed(entry);
    return gaus(generator);
 }
 
@@ -77,7 +79,7 @@ void df041_ThreadSafeRNG()
    // - With RDataFrame(TTree) constructor, the result is not guaranteed to be deterministic.
    //   To make it deterministic, use something from the dataset to act as the event identifier
    //   instead of rdfentry_, and use it as a seed.
-   // - requires constructing a new generator for each entry, which may have performance
+   // - requires reseeding generator for each entry, which may have performance
    //   implications
 
    auto df3 = ROOT::RDataFrame(10000000).Define("x", GetNormallyDistributedNumberForEntry, {"rdfentry_"});
