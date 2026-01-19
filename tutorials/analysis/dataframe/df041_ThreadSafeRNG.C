@@ -44,12 +44,19 @@ double GetNormallyDistributedNumber()
 
 double GetNormallyDistributedNumberForEntry(unsigned long long entry)
 {
-   // We want to generate a random number distributed according to a normal distribution in a thread-safe way and such that it is reproducible across different RDataFrame runs, i.e. given the same input to the generator it will produce the same value.
-   // This is one way to do it. It assumes that the input argument represents a unique entry ID, such that any thread processing an RDataFrame task will see this number once throughout the entire execution of the computation graph
+   // We want to generate a random number distributed according to a normal distribution in a thread-safe way and such
+   // that it is reproducible across different RDataFrame runs, i.e. given the same input to the generator it will
+   // produce the same value. This is one way to do it. It assumes that the input argument represents a unique entry ID,
+   // such that any thread processing an RDataFrame task will see this number once throughout the entire execution of
+   // the computation graph
    thread_local std::mt19937 generator;
    thread_local std::normal_distribution<double> gaus(0., 1.);
-   // Calling both `reset` and `seed` methods is fundamental here to ensure reproducibility: without them the same generator could be seeded by a different entry (depending on which is the first entry ID seen by a thread) or could be at a different step of the sequence (depending how many entries this particular thread is processing).
-   // Alternatively, if both the generator and the distribution objects were recreated from scratch at every function call (i.e. by removing the `thread_local` attribute), then the next two method calls would not be necessary, at the cost of a possible performance degradation.
+   // Calling both `reset` and `seed` methods is fundamental here to ensure reproducibility: without them the same
+   // generator could be seeded by a different entry (depending on which is the first entry ID seen by a thread) or
+   // could be at a different step of the sequence (depending how many entries this particular thread is processing).
+   // Alternatively, if both the generator and the distribution objects were recreated from scratch at every function
+   // call (i.e. by removing the `thread_local` attribute), then the next two method calls would not be necessary, at
+   // the cost of a possible performance degradation.
    gaus.reset();
    generator.seed(entry);
    return gaus(generator);
